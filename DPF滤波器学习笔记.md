@@ -326,13 +326,13 @@ $$
 **式 (13a)** — 先对创新协方差做 rank-$m$ **update**：
 
 $$
-S_{zz}^{(\ell,i-1)} = \operatorname{cholupdate}\left( S_{hh}^{(\ell,i-1)},\; \frac{S_{vv}}{\sqrt{\Delta s_i}} \right)
+S_{zz}^{(\ell,i-1)} = \text{cholupdate}\left( S_{hh}^{(\ell,i-1)},\; \frac{S_{vv}}{\sqrt{\Delta s_i}} \right)
 $$
 
 **式 (13b)** — 再对状态协方差做 **update + downdate**：
 
 $$
-S_{xx}^{(\ell,i)} = \operatorname{cholupdate}\left( S_{xx}^{(\ell,i-1)},\; K^{(\ell,i-1)} S_{zz}^{(\ell,i-1)} \right) \quad \text{(downdate)}
+S_{xx}^{(\ell,i)} = \text{cholupdate}\left( S_{xx}^{(\ell,i-1)},\; K^{(\ell,i-1)} S_{zz}^{(\ell,i-1)} \right) \quad \text{(downdate)}
 $$
 
 式 (13b) 中 `cholupdate` 的第三个参数为减号标志（MATLAB 写法为 `cholupdate(..., '-')`），表示 Cholesky **downdate** 而非 update。
@@ -555,7 +555,7 @@ $M=40$ 足够小时，DPF-EGMF 与 DPF-UGMF 几乎无差别——小步下解析
 | 不用 `\tag{}` | 改用 **式 (7a)** 文字编号 |
 | $w_x^{(\ell)\text{-}}$ | 先验上标，避免 `^{(\ell)-}` 解析错误 |
 | 式 (13) 主式 | 单行 `$$`，避免 `aligned` 内行首 `-` |
-| 式 (13a)(13b) | `\operatorname{cholupdate}` + `\frac{}{\sqrt{}}`，不用 `\big/` |
+| 式 (13a)(13b) | 用 `\text{cholupdate}`（GitHub 禁用 `\operatorname`） |
 | 式 (7c) `aligned` | 避免 `-` 开头被当成 Markdown 列表 |
 | 流程图用 ` ```text ` | GitHub 上稳定显示 |
 
