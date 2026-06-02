@@ -193,15 +193,23 @@ $$
 g_k(Z_k \mid \tilde{x}) = \prod_{o=1}^{O} g_k^{(o)}(Z_k^{(o)} \mid \tilde{x})
 $$
 
-**式 (21)–(22)** — 更新可写为 **单传感器算子** 的复合：
+**式 (21)** — 多传感器算子复合（对模式 $j$ 的密度，省略自变量 $\tilde{x}_k, Z$）：
 
 $$
-p_{k \mid k}^{(j)}(\tilde{x}_k \mid Z_{0\colon k}) = \Psi_k^{(O)} \circ \cdots \circ \Psi_k^{(1)}\, p_{k \mid k-1}^{(j)}(\tilde{x}_k \mid Z_{0\colon k-1})
+p_{k \mid k}^{(j)} = \Psi_k^{(O)} \circ \cdots \circ \Psi_k^{(1)} p_{k \mid k-1}^{(j)}
+$$
+
+**式 (22)** — 单传感器 Bayes 更新算子 $\Psi_k^{(o)}$（分子 / 分母形式）：
+
+$$
+[\Psi_k^{(o)} p](\tilde{x}) = \frac{g_k^{(o)}(Z_k^{(o)} \mid \tilde{x}) \cdot p(\tilde{x})}{c_k^{(o)}(\tilde{x})}
 $$
 
 $$
-[\Psi_k^{(o)} p](\tilde{x}) = \frac{g_k^{(o)}(Z_k^{(o)} \mid \tilde{x}) \cdot p(\tilde{x})}{\int \sum_{\ell} g_k^{(o)}(Z_k^{(o)} \mid \tilde{x}^{(\ell)}) \cdot p(\tilde{x}^{(\ell)}) \,\mathrm{d}\tilde{x}}
+c_k^{(o)}(\tilde{x}) = \int \sum_{l=1}^{M} g_k^{(o)}(Z_k^{(o)} \mid \tilde{x}^{(l)}) \cdot p(\tilde{x}^{(l)}) \text{d}\tilde{x}
 $$
+
+其中求和指标 $l$ 遍历联合状态 $\tilde{x}^{(l)}$（式 19 分母同理）。
 
 **推导要点**：先对联合似然因式分解，再逐传感器做 Bayes 更新；每步归一化分母含对所有模式的积分，保证概率守恒。
 
@@ -507,15 +515,21 @@ $$
 g_k^{(o,j)}(Z_k^{(o)} \mid x_k) = p_D^{(o)}(x_k; S^{(o)}) \cdot g_k^{(o,j)}(z_k^{(o)} \mid x_k)
 $$
 
-其中 $g_k^{(o,j)}(z \mid x) = N(z; h^{(o)}(x), R_k^{(j)})$。
+其中 $g_k^{(o,j)}(z \mid x) = N(z, h^{(o)}(x), R_k^{(j)})$。
 
-**式 (49)** — 更新后 pdf 结构（未归一化，见下式； $I_E=1$ 表示未检测）：
+**式 (49a)** — 未检测时（IE = 1，见式 48a）更新结构：
 
 $$
-[\Psi_k^{(o,j)} p^{(j)}](x) \propto I_E \sum_{\ell} (1-p_D)\, \omega^{(\ell,j)} N(x; m^{(\ell,j)}, P^{(\ell,j)}) + (1-I_E) \sum_{\ell} p_D\, \omega^{(\ell,j)}\, g(z \mid x)\, N(x; m^{(\ell,j)}, P^{(\ell,j)})
+[\Psi_k^{(o,j)} p^{(j)}](x) \propto \sum_{l} (1-p_D) \omega^{(l,j)} N(x, m^{(l,j)}, P^{(l,j)})
 $$
 
-其中 $I_E=1$ 当 $Z_k^{(o)}=\varnothing$， $I_E=0$ 当有检测。
+**式 (49b)** — 有检测时（IE = 0，见式 48b）更新结构：
+
+$$
+[\Psi_k^{(o,j)} p^{(j)}](x) \propto \sum_{l} p_D \omega^{(l,j)} g(z \mid x) N(x, m^{(l,j)}, P^{(l,j)})
+$$
+
+上式中 $l$ 为 GM 分量索引；$N(x, m, P)$ 表示均值为 $m$、协方差为 $P$ 的高斯 pdf；IE 为未检测指示（未检测取 1，有检测取 0）。
 
 **直觉**：
 
@@ -886,10 +900,11 @@ Algorithm 1  AGMIMM Filter (one time step k, general O sensors)
 | 标点与 `$` | 中文标点（：。，；等）与行内公式 `$` 之间 **必须加空格**，如 `： $p_{...}$` |
 | 符号表 | 与 DPF 笔记相同，表格单元格内可用 `$...$`（条件下标用 `\mid`） |
 | 先验/后验上标 | 用 `^{\text{-}}` / `^{\text{+}}`，避免 `^{(\ell)-}` 或裸 `^+` |
-| 高斯 pdf | 用 `N(·; m, P)`，不用 `\mathcal{N}` |
-| 分段公式 | 不用 `\begin{cases}`；拆成 (48a)/(48b) 等 |
-| 量测历史 | 写 $Z_{0\colon k}$，下标冒号用 `\colon`，避免 `Z_{0:k}` |
-| 指示函数 | 行内/标题用 $I_E$；display 中写 $I_E$，勿用 $I_{\emptyset}$ |
+| 高斯 pdf | 写 `N(x, m, P)`（逗号），不用 `N(x; m, P)` |
+| 分段/长公式 | 拆成 (22a)/(22b)、(49a)/(49b)；分母单独一行定义 |
+| 分量下标 | 长 display 式用 `l` 与 `\sum_l`，避免 `\ell` |
+| 量测历史 | 写 $Z_{0\colon k}$，下标冒号用 `\colon` |
+| 未检测指示 | 标题用纯文本 IE；拆为未检测/有检测两式，不用 $I_E$ 行内 |
 | 期望/数域 | 用 `\text{E}`、`\text{R}^n`，不用 `\mathbb{}` |
 | 函数名 | 用 `\text{cholupdate}` 等，不用 `\operatorname` / `\mathrm` |
 | 逆矩阵 | 用 `{...}^{-1}`，少用 `(...)^{-1}` |
