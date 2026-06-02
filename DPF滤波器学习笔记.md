@@ -2,9 +2,7 @@
 
 > **论文**：AAS 25-582 — *Discrete Parameter Flow Filtering for Sparse Tracking of Objects in Cislunar Orbits*  
 > **作者**：William N. Fife, Kyle J. DeMars, Gunner S. Fritsch  
-> **整理依据**：论文正文 + 现有中文笔记（校正步公式讲解）
->
-> **阅读说明**：公式符号与 AAS 25-582 一致；LaTeX 已针对 **GitHub KaTeX** 优化（无 `\tag`、无 `\operatorname`、先验/后验上标用 `\text{-}` / `\text{+}`、复杂式用单行 `$$`）。
+
 
 ---
 
