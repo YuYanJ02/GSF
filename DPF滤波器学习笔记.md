@@ -226,12 +226,7 @@ $$
 ### 3.4 协方差更新 — 式 (7c)
 
 $$
-\begin{aligned}
-P_{xx}^{(\ell,i)}
-&= P_{xx}^{(\ell,i-1)}
- - K^{(\ell,i)} P_{hh}^{(\ell,i-1)} \left(K^{(\ell,i)}\right)^{T} \\
-&\quad - K^{(\ell,i)} \frac{P_{vv}}{\Delta s_i} \left(K^{(\ell,i)}\right)^{T}
-\end{aligned}
+P_{xx}^{(\ell,i)} = P_{xx}^{(\ell,i-1)} - K^{(\ell,i)} P_{hh}^{(\ell,i-1)} \left(K^{(\ell,i)}\right)^{T} - K^{(\ell,i)} \frac{P_{vv}}{\Delta s_i} \left(K^{(\ell,i)}\right)^{T}
 $$
 
 **含义**：
@@ -556,7 +551,7 @@ $M=40$ 足够小时，DPF-EGMF 与 DPF-UGMF 几乎无差别——小步下解析
 | $w_x^{(\ell)\text{-}}$ | 先验上标，避免 `^{(\ell)-}` 解析错误 |
 | 式 (13) 主式 | 单行 `$$`，避免 `aligned` 内行首 `-` |
 | 式 (13a)(13b) | 用 `\text{cholupdate}`（GitHub 禁用 `\operatorname`） |
-| 式 (7c) `aligned` | 避免 `-` 开头被当成 Markdown 列表 |
+| 式 (7c) | 单行 `$$`，不用 `aligned`（避免行首 `-` 破坏公式） |
 | 流程图用 ` ```text ` | GitHub 上稳定显示 |
 
 推送后在 GitHub 网页打开本文件即可查看渲染后的公式。
