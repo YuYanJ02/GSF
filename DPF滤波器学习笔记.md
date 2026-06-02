@@ -309,12 +309,10 @@ $$
 
 ### 4.2 平方根（SRF）实现 — 式 (13)
 
-令 $S_{aa} S_{aa}^{T} = P_{aa}$。协方差更新可写为 Cholesky **update/downdate**：
+令 $S_{aa} S_{aa}^{T} = P_{aa}$。协方差平方根更新可写为（论文第 5 页）：
 
 $$
-S_{xx}^{(\ell,i)} \left(S_{xx}^{(\ell,i)}\right)^{T}
-= S_{xx}^{(\ell,i-1)} \left(S_{xx}^{(\ell,i-1)}\right)^{T}
- - K \left[ S_{hh} S_{hh}^{T} + \frac{1}{\Delta s_i} S_{vv} S_{vv}^{T} \right] K^{T}
+S_{xx}^{(\ell,i)} S_{xx}^{(\ell,i)\,T} = S_{xx}^{(\ell,i-1)} S_{xx}^{(\ell,i-1)\,T} - K \left[ S_{hh} S_{hh}^{T} + \tfrac{1}{\Delta s_i} S_{vv} S_{vv}^{T} \right] K^{T}
 $$
 
 **线性化路径**：
@@ -323,23 +321,23 @@ $$
 S_{hh}^{(\ell,i-1)} = H_x^{(\ell,i-1)} S_{xx}^{(\ell,i-1)}
 $$
 
-**求积路径**（含负权重 $w_c^{(\ell,j)}$）：按文献 [18] 分离正负权重，QR + `cholupdate` / `cholupdate(...,'-')` 构造 $S_{hh}$。
+**求积路径**（含负权重 $w_c^{(\ell,j)}$）：按文献 [18] 分离正负权重，用 QR 与 Cholesky update/downdate 构造 $S_{hh}$（MATLAB 函数 `cholupdate`）。
 
-**式 (13a)**：
-
-$$
-S_{zz}^{(\ell,i-1)}
-= \mathrm{cholupdate}\!\left\{S_{hh}^{(\ell,i-1)},\; \frac{1}{\sqrt{\Delta s_i}}\, S_{vv}\right\}
-$$
-
-**式 (13b)**（`\text{downdate}` 对应 MATLAB `cholupdate(...,'-'`）：
+**式 (13a)** — 先对创新协方差做 rank-$m$ **update**：
 
 $$
-S_{xx}^{(\ell,i)}
-= \mathrm{cholupdate}\!\left\{S_{xx}^{(\ell,i-1)},\; K^{(\ell,i-1)} S_{zz}^{(\ell,i-1)},\; \text{downdate}\right\}
+S_{zz}^{(\ell,i-1)} = \operatorname{cholupdate}\left( S_{hh}^{(\ell,i-1)},\; \frac{S_{vv}}{\sqrt{\Delta s_i}} \right)
 $$
 
-式 (13b) 依次做 rank-$m$ Cholesky **update** 与 **downdate**（$m$ 为测量维数）。地月算例中三种滤波器均使用**线性化平方根**实现。
+**式 (13b)** — 再对状态协方差做 **update + downdate**：
+
+$$
+S_{xx}^{(\ell,i)} = \operatorname{cholupdate}\left( S_{xx}^{(\ell,i-1)},\; K^{(\ell,i-1)} S_{zz}^{(\ell,i-1)} \right) \quad \text{(downdate)}
+$$
+
+式 (13b) 中 `cholupdate` 的第三个参数为减号标志（MATLAB 写法为 `cholupdate(..., '-')`），表示 Cholesky **downdate** 而非 update。
+
+式 (13b) 依次做 rank-$m$ 的 update 与 downdate（$m$ 为测量维数）。地月算例中三种滤波器均使用**线性化平方根**实现。
 
 ### 4.3 变体选择建议
 
@@ -556,7 +554,8 @@ $M=40$ 足够小时，DPF-EGMF 与 DPF-UGMF 几乎无差别——小步下解析
 |------|------|
 | 不用 `\tag{}` | 改用 **式 (7a)** 文字编号 |
 | $w_x^{(\ell)\text{-}}$ | 先验上标，避免 `^{(\ell)-}` 解析错误 |
-| 式 (13b) `\text{downdate}` | 避免公式内嵌套 `$` |
+| 式 (13) 主式 | 单行 `$$`，避免 `aligned` 内行首 `-` |
+| 式 (13a)(13b) | `\operatorname{cholupdate}` + `\frac{}{\sqrt{}}`，不用 `\big/` |
 | 式 (7c) `aligned` | 避免 `-` 开头被当成 Markdown 列表 |
 | 流程图用 ` ```text ` | GitHub 上稳定显示 |
 
