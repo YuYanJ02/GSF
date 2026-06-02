@@ -4,7 +4,7 @@
 > **作者**：William N. Fife, Kyle J. DeMars, Gunner S. Fritsch  
 > **整理依据**：论文正文 + 现有中文笔记（校正步公式讲解）
 >
-> **阅读说明**：公式符号与 AAS 25-582 一致；LaTeX 已针对 **GitHub MathJax** 优化（无 `\tag`、先验/后验上标用 `\text{-}` / `\text{+}`、表格内不写复杂公式）。
+> **阅读说明**：公式符号与 AAS 25-582 一致；LaTeX 已针对 **GitHub KaTeX** 优化（无 `\tag`、无 `\operatorname`、先验/后验上标用 `\text{-}` / `\text{+}`、复杂式用单行 `$$`）。
 
 ---
 
@@ -81,16 +81,13 @@ $$
 **式 (5)** — 似然乘积分解。设 $0=s_1 < s_2 < \cdots < s_{M+1}=1$，且 $\sum_m \Delta s_m = 1$，其中 $\Delta s_m = s_{m+1}-s_m$：
 
 $$
-p(z_k \mid x_k) = \prod_{m=1}^{M} p^{\Delta s_{m}}(z_k \mid x_k)
+p(z_k \mid x_k) = \prod_{m=1}^{M} p^{\Delta s_m}(z_k \mid x_k)
 $$
 
 对高斯测量模型 $p_g(z_k;\, h(x_k),\, P_{vv})$，代入式 (5) 得 **式 (6)**：
 
 $$
-p(z_k \mid x_k)
-= |2\pi P_{vv}|^{-1/2}
-  \prod_{m=1}^{M} \left|2\pi \frac{P_{vv}}{\Delta s_m}\right|^{1/2}
-  p_g\!\left(z;\, h(x_k),\, \frac{P_{vv}}{\Delta s_m}\right)
+p(z_k \mid x_k) = \left|2\pi P_{vv}\right|^{-1/2} \prod_{m=1}^{M} \left|2\pi \frac{P_{vv}}{\Delta s_m}\right|^{1/2} p_g\left(z;\, h(x_k),\, \frac{P_{vv}}{\Delta s_m}\right)
 $$
 
 **要点**：
@@ -101,7 +98,7 @@ $$
 直觉上可记：
 
 $$
-R_{\mathrm{step}} = \frac{P_{vv}}{\Delta s_i}
+R_{\text{step}} = \frac{P_{vv}}{\Delta s_i}
 $$
 
 每一步的线性化/统计线性化只处理“弱测量”，误差更小；$M$ 步累加后达到完整 Bayes 更新效果。
@@ -400,16 +397,16 @@ while s̄ < 1 且 m < M_max:
 **后验误差范数**：
 
 $$
-\left\|e_x^+\right\| = \left\|x - m_x^+\right\|
+\left\|e_x^{\text{+}}\right\| = \left\|x - m_x^{\text{+}}\right\|
 $$
 
 **归一化估计误差平方（NEES）**：
 
 $$
-d = \frac{1}{n}\,(x - m_x^+)^{T} (P_{xx}^+)^{-1} (x - m_x^+)
+d = \frac{1}{n} (x - m_x^{\text{+}})^{T} {P_{xx}^{\text{+}}}^{-1} (x - m_x^{\text{+}})
 $$
 
-- 滤波器**一致**时，$\mathbb{E}[d] = n$（$n$ 为状态维数）。
+- 滤波器**一致**时，$\text{E}[d] = n$（$n$ 为状态维数）。
 - 2D 算例 $n=2$ 时，一致则 NEES 均值 $\approx 2$；论文 box plot 中“接近 1”指归一化 $d/n$。
 - $d/n > 1$：过自信；$d/n < 1$：保守。
 
@@ -417,9 +414,8 @@ $$
 
 **设置**（论文第 7–9 页）：
 
-- 状态 $x=[x,\,y]^{T}$，真先验为 GMM；从**尾部** $x_{\mathrm{tail}}=[44,\,10]^{T}$ 采样 1000 组高精度测量；
-- 测量：距离 + 方位，
-  $P_{vv} = \mathrm{diag}(2.5\times10^{-5},\, 0.5^2\ \mathrm{arcsec}^2)$；
+- 状态 $x=[x,\,y]^{T}$，真先验为 GMM；从**尾部** $x_{\text{tail}}=[44,\,10]^{T}$ 采样 1000 组高精度测量；
+- 测量：距离 + 方位，$P_{vv}=\text{diag}(2.5\times 10^{-5},\, 0.25\,\text{arcsec}^2)$（方位噪声 $0.5\,\text{arcsec}$）；
 - DPF：$M=40$，**三次**伪时间规则；
 - 对比：EKF/UKF（单高斯先验，$p=0.7$ 欠加权）、EGMF/UGMF、DPF-EGMF/DPF-UGMF。
 
@@ -429,7 +425,7 @@ $$
 |--------|------|----------------|
 | EKF/UKF | 差 | 不一致 |
 | EGMF/UGMF | 改善 | 仍过自信（中位 NEES $> 2$） |
-| **DPF-EGMF/UGMF** | **最坏情况误差约降 50%** | **中位 NEES $\approx 1$（归一化）** |
+| **DPF-EGMF/UGMF** | **最坏情况误差约降 50%** | 中位 NEES $\approx 1$（归一化） |
 
 $M=40$ 足够小时，DPF-EGMF 与 DPF-UGMF 几乎无差别——小步下解析与统计线性化趋同。
 
@@ -457,11 +453,11 @@ $M=40$ 足够小时，DPF-EGMF 与 DPF-UGMF 几乎无差别——小步下解析
 
 | 滤波器 | 1 周期后 x-y | NEES | 备注 |
 |--------|-------------|------|------|
-| EGMF | 有偏；$\pm 3\sigma$ 不覆盖误差云 | 中位 $>1$，随周期恶化 | 单步失败 |
+| EGMF | 有偏；$\pm 3\sigma$ 不覆盖误差云 | 中位 NEES $> 1$，随周期恶化 | 单步失败 |
 | DPF-EGMF | 无偏；$\pm 3\sigma$ 与 MC 一致 | 略保守 | $M=30$ |
 | ADPF-EGMF | 与 DPF 相近 | 尾部更稳健 | $\sim 16$ 步/分量 |
 
-- **3 轨道周期后单次测量**：多步滤波中位 RSS 位置误差 **$\approx 120\,\mathrm{m}$**；单步 EGMF 在 **1 轨道周期** 才达到相近量级。
+- **3 轨道周期后单次测量**：多步滤波中位 RSS 位置误差 $\approx 120\,\text{m}$；单步 EGMF 在 **1 轨道周期** 才达到相近量级。
 - 同一传播时长下，各 GMM 分量 ADPF 步数**与测量值无关**（论文 Fig. 13）。
 - **关键机制**：(1) 分步更新使强非线性一步 ≈ 多次弱线性步；(2) 分步保留 GMM 尾部，避免单步“压扁”低权重分量。
 
@@ -551,7 +547,11 @@ $M=40$ 足够小时，DPF-EGMF 与 DPF-UGMF 几乎无差别——小步下解析
 | $w_x^{(\ell)\text{-}}$ | 先验上标，避免 `^{(\ell)-}` 解析错误 |
 | 式 (13) 主式 | 单行 `$$`，避免 `aligned` 内行首 `-` |
 | 式 (13a)(13b) | 用 `\text{cholupdate}`（GitHub 禁用 `\operatorname`） |
-| 式 (7c) | 单行 `$$`，不用 `aligned`（避免行首 `-` 破坏公式） |
-| 流程图用 ` ```text ` | GitHub 上稳定显示 |
+| 式 (5)(6) | 单行 `$$`；行列式用 `\left\|...\right\|` |
+| 后验上标 | 用 `^{\text{+}}`，避免裸 `^+` |
+| 表格/列表 | 不用 `**$...$**`；行内公式写在同一行 |
+| 单位/函数名 | 用 `\text{}`，不用 `\mathrm{}` / `\operatorname{}` |
+| 式 (7c) | 单行 `$$`，不用 `aligned` |
+| 流程图 | 用 ` ```text ` 代码块 |
 
 推送后在 GitHub 网页打开本文件即可查看渲染后的公式。
