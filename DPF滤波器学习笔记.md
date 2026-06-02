@@ -35,8 +35,8 @@
 | $P_{ww},\, P_{vv}$ | 过程噪声、测量噪声协方差 |
 | $L_x$ | GMM 分量数 |
 | $M$ | 伪时间步数（校正迭代次数） |
-| $s_m \in [0,1]$ | 伪时间点，$0=s_1 < s_2 < \cdots < s_{M+1}=1$ |
-| $\Delta s_m = s_{m+1}-s_m$ | 第 $m$ 步伪时间增量，$\sum_m \Delta s_m = 1$ |
+| $s_m \in [0,1]$ | 伪时间点，如 $0=s_1 < s_2 < \cdots < s_{M+1}=1$ |
+| $\Delta s_m = s_{m+1}-s_m$ | 第 $m$ 步伪时间增量，如 $\sum_m \Delta s_m = 1$ |
 | $\ell=1,\ldots,L_x$ | GMM 分量索引 |
 | $i=1,\ldots,M$ | 校正迭代步索引 |
 | $w_x^{(\ell,i)},\, m_x^{(\ell,i)},\, P_{xx}^{(\ell,i)}$ | 权重、均值、协方差 |
@@ -68,7 +68,7 @@ $$
 
 ### 1.2 单步更新的问题
 
-1. **线性化误差**：$h(x)$ 非线性时，在“大修正”下 Taylor 展开或 sigma 点近似误差大。
+1. **线性化误差**：当 $h(x)$ 非线性时，在“大修正”下 Taylor 展开或 sigma 点近似误差大。
 2. **GMM 过自信**：单步 GMF 中，许多分量一次吸收全部测量，尾部/低权重分量被大幅拉动，**NEES 显著偏大**（论文 2D 算例中 EGMF 中位 NEES $> 2$，极端可达 $\sim 7$）。
 3. **稀疏观测场景**：地月轨道等长时间无测量，先验 spread 很大；一次 LOS 更新仍用单步 GMF 会**有偏且无法覆盖真实误差分布**。
 
@@ -90,7 +90,7 @@ $$
 
 **要点**：
 
-- $\Delta s_m > 0$ 时 $P_{vv}/\Delta s_m$ 非奇异（$P_{vv}$ 非奇异前提下）。
+- $\Delta s_m > 0$ 时 $P_{vv}/\Delta s_m$ 非奇异（ $P_{vv}$ 非奇异前提下）。
 - 第 $i$ 步迭代时，**有效测量噪声协方差**为 $P_{vv}/\Delta s_i$；当 $\Delta s_i$ 越小 → 该步测量越“弱” → 修正越小。
 
 直觉上可记：
@@ -99,7 +99,7 @@ $$
 R_{\text{step}} = \frac{P_{vv}}{\Delta s_i}
 $$
 
-每一步的线性化/统计线性化只处理“弱测量”，误差更小；$M$ 步累加后达到完整 Bayes 更新效果。
+每一步的线性化/统计线性化只处理“弱测量”，误差更小；当 $M$ 步累加后达到完整 Bayes 更新效果。
 
 > **类比**：分步扩展卡尔曼 — 把一次大更新拆成 $M$ 次小卡尔曼校正；权重更新 $k^{(\ell,i)}$ 还考虑了 GMM 混合归一化（单高斯 Kalman 无此项）。
 
@@ -146,18 +146,18 @@ $$
 $$
 p(x_k)
 = \sum_{\ell=1}^{L_x} w_x^{(\ell)\text{-}}\,
-  p_g\!\left(x_k;\, m_x^{(\ell)\text{-}},\, P_{xx}^{(\ell)\text{-}}\right)
+  p_g\left(x_k;\, m_x^{(\ell)\text{-}},\, P_{xx}^{(\ell)\text{-}}\right)
 $$
 
 - 上标 $(\ell)\text{-}$ 表示第 $\ell$ 个分量的**先验**参数（已吸收 $z_{1:k-1}$）。
-- **单高斯特例**：$L_x=1$，$w_x^{(1)\text{-}}=1$ → 退化为高斯 DPF（仍有式 7a 权重迭代）。
+- **单高斯特例**：当 $L_x=1$，此时 $w_x^{(1)\text{-}}=1$ → 退化为高斯 DPF（仍有式 7a 权重迭代）。
 
 校正完成后，后验仍为 GMM：
 
 $$
 p(x_k \mid z_k)
 = \sum_{\ell=1}^{L_x} w_x^{(\ell)\text{+}}\,
-  p_g\!\left(x_k;\, m_x^{(\ell)\text{+}},\, P_{xx}^{(\ell)\text{+}}\right)
+  p_g\left(x_k;\, m_x^{(\ell)\text{+}},\, P_{xx}^{(\ell)\text{+}}\right)
 $$
 
 ---
@@ -166,7 +166,7 @@ $$
 
 ### 3.1 迭代初始化与输出
 
-对第 $\ell$ 个 GMM 分量，$i=0$ 时：
+对第 $\ell$ 个 GMM 分量，当 $i=0$ 时：
 
 $$
 w_x^{(\ell,0)} = w_x^{(\ell)\text{-}}, \quad
@@ -277,7 +277,7 @@ $$
 
 | 名称 | 式 (9) 近似 | 说明 |
 |------|-------------|------|
-| **DPF-EGMF** | $m_h \approx h(m_x)$，$P_{xh} \approx P_{xx} H_x^{T}$，$P_{hh} \approx H_x P_{xx} H_x^{T}$ | 一阶 Taylor；$H_x = \partial h / \partial x$ |
+| **DPF-EGMF** | $m_h \approx h(m_x)$，这里 $P_{xh} \approx P_{xx} H_x^{T}$，这里 $P_{hh} \approx H_x P_{xx} H_x^{T}$ | 一阶 Taylor；这里 $H_x = \partial h / \partial x$ |
 | **DPF-QGMF** | Gauss-Hermite 求积 | 通用求积框架 |
 | **DPF-UGMF** | 无迹变换（UT） | $\alpha=0.1,\,\beta=2,\,\kappa=1$（论文 2D 算例） |
 
@@ -295,7 +295,7 @@ $$
 P_{hh}^{(\ell,i-1)} \approx H_x^{(\ell,i-1)} P_{xx}^{(\ell,i-1)} \left(H_x^{(\ell,i-1)}\right)^{T}
 $$
 
-**论文结论**：$M$ 足够大（如 40 步）时，EGMF 与 UGMF 性能接近——小步下解析与统计线性化差异变小。
+**论文结论**：当 $M$ 足够大（如 40 步）时，EGMF 与 UGMF 性能接近——小步下解析与统计线性化差异变小。
 
 ### 4.2 平方根（SRF）实现 — 式 (13)
 
@@ -313,7 +313,7 @@ $$
 
 **求积路径**（含负权重 $w_c^{(\ell,j)}$）：按文献 [18] 分离正负权重，用 QR 与 Cholesky update/downdate 构造 $S_{hh}$（MATLAB 函数 `cholupdate`）。
 
-**式 (13a)** — 先对创新协方差做 rank-$m$ **update**：
+**式 (13a)** — 先对创新协方差做 rank为 $m$ **update**：
 
 $$
 S_{zz}^{(\ell,i-1)} = \text{cholupdate}\left( S_{hh}^{(\ell,i-1)},\; \frac{S_{vv}}{\sqrt{\Delta s_i}} \right)
@@ -327,7 +327,7 @@ $$
 
 式 (13b) 中 `cholupdate` 的第三个参数为减号标志（MATLAB 写法为 `cholupdate(..., '-')`），表示 Cholesky **downdate** 而非 update。
 
-式 (13b) 依次做 rank-$m$ 的 update 与 downdate（$m$ 为测量维数）。地月算例中三种滤波器均使用**线性化平方根**实现。
+式 (13b) 依次做 rank为 $m$ 的 update 与 downdate（$m$ 为测量维数）。地月算例中三种滤波器均使用**线性化平方根**实现。
 
 ### 4.3 变体选择建议
 
