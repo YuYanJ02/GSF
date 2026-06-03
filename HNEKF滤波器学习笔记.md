@@ -1,6 +1,12 @@
 # HNEKF：高阶数值扩展卡尔曼滤波详解
 
 > 高阶数值扩展卡尔曼滤波（Higher-order Numerical Extended Kalman Filter, HNEKF）在标准 EKF 框架下引入状态转移张量，用于强非线性系统（如地月 CR3BP）的状态估计。
+> **论文**：*Spacecraft-to-Spacecraft Absolute and Relative Tracking Using Higher-Order Nonlinear Filtering*  
+> **会议**：AAS/AIAA Astrodynamics Specialist Conference, 2025（AAS 25-599, Preprint）  
+> **作者**：Ryan J. Menges, Daniel J. Scheeres（University of Colorado Boulder）  
+> **整理依据**：论文 PDF [`SPACECRAFT-TO-SPACECRAFT ABSOLUTE AND RELATIVE.pdf`](SPACECRAFT-TO-SPACECRAFT%20ABSOLUTE%20AND%20RELATIVE.pdf)  
+> **HNEKF 理论来源**：Park & Scheeres, *Nonlinear semi-analytic methods for trajectory estimation*, Journal of Guidance, Control, and Dynamics, 30(6), 2007  
+
 
 ## 1. 非线性系统与解流
 
