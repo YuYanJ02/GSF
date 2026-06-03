@@ -133,7 +133,7 @@ $$
 \mathbb{E}\left[\delta x_k^{\gamma_1}\cdots\delta x_k^{\gamma_p}\right]
 $$
 
-- $\phi$：$p$ 阶状态转移张量
+- $\phi$： $p$ 阶状态转移张量
 - $\mathbb{E}[\cdot]$：对当前估计误差 $\delta\mathbf{x}_k = \mathbf{x}_k - \mathbf{m}_k^{+}$ 的各阶矩求期望
 
 若系统线性，高阶张量为零，退化为标准 EKF 均值积分。
@@ -193,8 +193,8 @@ $$
 
 其中 $h_{(t_{k+1},t_k)}^{i,\gamma_1\cdots\gamma_p}$ 是测量函数与流的复合高阶偏导（公式 23）：
 
-- 一阶：$h^{i,a} = h_{k+1}^{i,\alpha}\,\phi^{\alpha,a}$
-- 二阶：$h^{i,ab} = h_{k+1}^{i,\alpha}\,\phi^{\alpha,ab} + h_{k+1}^{i,\alpha\beta}\,\phi^{\alpha,a}\phi^{\beta,b}$
+- 一阶： $h^{i,a} = h_{k+1}^{i,\alpha}\,\phi^{\alpha,a}$
+- 二阶： $h^{i,ab} = h_{k+1}^{i,\alpha}\,\phi^{\alpha,ab} + h_{k+1}^{i,\alpha\beta}\,\phi^{\alpha,a}\phi^{\beta,b}$
 
 这里 $h_{k+1}^{i,\alpha} = \dfrac{\partial h^{i}}{\partial x^{\alpha}}$ 在预测状态处取值。
 
@@ -216,7 +216,17 @@ $$
 \end{aligned}
 $$
 
-其中所有预测量（$\mathbf{m}_{k+1}^{-}, \mathbf{P}_{k+1}^{-}, \mathbf{n}_{k+1}^{-}, \mathbf{P}_{k+1}^{zz}, \mathbf{P}_{k+1}^{xz}$）均来自前述高阶修正。
+其中所有预测量 ： 
+
+$$
+\mathbf{m}_{k+1}^{-},\;
+\mathbf{P}_{k+1}^{-},\;
+\mathbf{n}_{k+1}^{-},\;
+\mathbf{P}_{k+1}^{\mathbf{zz}},\;
+\mathbf{P}_{k+1}^{\mathbf{xz}}
+$$ 
+
+均来自前述高阶修正。
 
 ---
 
