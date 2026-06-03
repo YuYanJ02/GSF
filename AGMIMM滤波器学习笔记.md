@@ -6,7 +6,7 @@
 > **作者**：John L. Iannamorelli, Keith A. LeGrand（Purdue University）  
 > **整理依据**：[`AGMIMM.txt`](AGMIMM.txt)（§3.1–3.4 中文详解）  
 >
-> **阅读说明**：GitHub 渲染要求：中文标点后 `$` / `\(` 前留空格（如 `： $p_{...}$`）；行内公式含复杂下标时优先 `\(...\)` 或独立 `$$...$$` 块。
+> **阅读说明**：GitHub 渲染要求：中文标点后 `$` 前留空格；段落中的长公式已单独成行（`$$...$$` 块级公式）。
 
 ---
 
@@ -16,7 +16,17 @@
 
 在**跳跃马尔可夫系统 (Jump Markov System, JMS)** 中，目标的运动模式（例如“弹道飞行”或“机动推进”）会随时间随机切换。我们不仅要估计目标的连续状态 $\mathbf{x}_{k}$（位置、速度），还要推断当前的离散模式 $\tau_{k}$。两者是耦合的：不同模式对应不同的动力学方程、过程噪声乃至量测模型。
 
-非线性 JMS 的贝叶斯滤波目标：**递归计算联合状态** $\widetilde{\mathbf{x}}_{k} = [\mathbf{x}_{k}^{\top},\tau_{k}]^{\top}$ **的后验概率密度** $p_{k}(\widetilde{\mathbf{x}}_{k} \mid Z_{0:k})$，其中 $Z_{0:k}$ 是直到时刻 $k$ 的所有多传感器量测集合。
+非线性 JMS 的贝叶斯滤波目标：**递归计算联合状态**与**后验概率密度**：
+
+$$
+\widetilde{\mathbf{x}}_{k} = [\mathbf{x}_{k}^{\top},\tau_{k}]^{\top}
+$$
+
+$$
+p_{k}(\widetilde{\mathbf{x}}_{k} \mid Z_{0:k})
+$$
+
+其中 $Z_{0:k}$ 是直到时刻 $k$ 的所有多传感器量测集合。
 
 挑战来自三方面：
 
@@ -30,8 +40,17 @@
 
 ## 核心符号与假设
 
-- 目标连续状态： $\mathbf{x}_{k} \in \mathbb{R}^{n_{x}}$（本文 $n_{x}=6$，位置+速度）。
-- 离散模式： $\tau_{k} \in \mathcal{M} = \{1,\dots,M\}$，模式转移概率已知且时不变：
+- 目标连续状态（本文 $n_{x}=6$，位置+速度）：
+
+$$
+\mathbf{x}_{k} \in \mathbb{R}^{n_{x}}
+$$
+
+- 离散模式，模式转移概率已知且时不变：
+
+$$
+\tau_{k} \in \mathcal{M} = \{1,\dots,M\}
+$$
   $$
   \pi_{ij} = \Pr(\tau_{k} = j \mid \tau_{k-1} = i)
   $$
@@ -55,7 +74,11 @@ $$
 
 **直觉**：这是标准贝叶斯公式的联合版本。先验 $p_{k|k-1}$（预测）与当前量测似然 $g_{k}$ 相乘，归一化得到后验。分母中积分和求和对所有连续状态和所有模式进行。
 
-为了显式区分模式，论文用上标 $(j)$ 表示条件于 $\tau_{k}=j$，例如 $\widetilde{\mathbf{x}}^{(j)} = [\mathbf{x}_{k}^{\top}, j]^{\top}$。
+为了显式区分模式，论文用上标 $(j)$ 表示条件于 $\tau_{k}=j$，例如：
+
+$$
+\widetilde{\mathbf{x}}^{(j)} = [\mathbf{x}_{k}^{\top}, j]^{\top}
+$$
 
 ---
 
@@ -93,11 +116,26 @@ $$
 
 **直觉**：这是**预测**的核心。它结合了两个随机过程：
 
-1. **状态转移** $p_{k|k-1}(\widetilde{\mathbf{x}}_{k}^{(j)} \mid \widetilde{\mathbf{x}}_{k-1}^{(i)})$：从上时刻模式 $i$ 和连续状态 $\mathbf{x}_{k-1}$ 转移到当前模式 $j$ 和连续状态 $\mathbf{x}_{k}$ 的概率密度。它由三部分构成：
+1. **状态转移**（从上时刻模式 $i$ 和连续状态 $\mathbf{x}_{k-1}$ 转移到当前模式 $j$ 和连续状态 $\mathbf{x}_{k}$ 的概率密度）：
+
+$$
+p_{k|k-1}(\widetilde{\mathbf{x}}_{k}^{(j)} \mid \widetilde{\mathbf{x}}_{k-1}^{(i)})
+$$
+
+   它由三部分构成：
    - 模式转移概率 $\pi_{ij}$
-   - 动力学方程 $\mathbf{x}_{k} = \mathbf{f}(\mathbf{x}_{k-1}) + \mathbf{w}_{k-1}(\tau_{k}=j)$
+   - 动力学方程：
+
+$$
+\mathbf{x}_{k} = \mathbf{f}(\mathbf{x}_{k-1}) + \mathbf{w}_{k-1}(\tau_{k}=j)
+$$
+
    - 过程噪声分布（高斯）
-2. 上时刻的后验 $p_{k-1}(\widetilde{\mathbf{x}}_{k-1}^{(i)} \mid Z_{0:k-1})$。
+2. **上时刻的后验**：
+
+$$
+p_{k-1}(\widetilde{\mathbf{x}}_{k-1}^{(i)} \mid Z_{0:k-1})
+$$
 
 对上一时刻所有可能的连续状态和所有模式求和/积分，得到当前时刻的先验。
 
@@ -140,8 +178,17 @@ $$
 $$
 
 其中：
-- $g_{k}^{(o,j)}(Z_{k}^{(o)} \mid \mathbf{x}) = g_{k}^{(o)}(Z_{k}^{(o)} \mid \tau_{k}=j, \mathbf{x})$ 是模式 $j$ 下的量测似然。
-- $p_{k}^{(o,j)}(Z_{k}^{(o)} \mid Z_{0:k-1}) = \int g_{k}^{(o,j)}(Z_{k}^{(o)} \mid \mathbf{x})\, p^{(j)}(\mathbf{x})\, d\mathbf{x}$ 是模式 $j$ 的预测似然（边际）。
+- 模式 $j$ 下的量测似然：
+
+$$
+g_{k}^{(o,j)}(Z_{k}^{(o)} \mid \mathbf{x}) = g_{k}^{(o)}(Z_{k}^{(o)} \mid \tau_{k}=j, \mathbf{x})
+$$
+
+- 模式 $j$ 的预测似然（边际）：
+
+$$
+p_{k}^{(o,j)}(Z_{k}^{(o)} \mid Z_{0:k-1}) = \int g_{k}^{(o,j)}(Z_{k}^{(o)} \mid \mathbf{x})\, p^{(j)}(\mathbf{x})\, d\mathbf{x}
+$$
 
 **直觉**：模式条件密度的更新**分母需要对所有模式求和**，这是因为量测可能来自任何模式，模式之间的竞争通过分母中的混合体现。模式概率的更新则是贝叶斯公式直接应用于离散随机变量。
 
@@ -162,17 +209,41 @@ p_{k-1}(\mathbf{x}_{k-1} \mid \tau_{k}=j, Z_{0:k-1}) = \sum_{i=1}^{M} \left[ \fr
 $$
 
 
-**直觉**：要预测当前模式 $j$ 下的状态，我们不知道上一时刻的目标是哪个模式。因此需要将上一时刻所有模式的后验密度 $p_{k-1}^{(i)}(\mathbf{x}_{k-1})$ 按照**模式转移概率**和**上时刻模式概率**加权混合，并归一化。这个混合密度就是当前模式 $j$ 下进行动力学传播的**初始分布**。
+**直觉**：要预测当前模式 $j$ 下的状态，我们不知道上一时刻的目标是哪个模式。因此需要将上一时刻所有模式的后验密度 
 
-公式 (34) 中的权重 $\frac{\pi_{ij} \mu_{k-1}^{(i)}}{\bar{\mu}_{k|k-1}^{(j)}}$ 是一种**贝叶斯回溯**：给定当前模式 $j$，上一时刻模式为 $i$ 的概率。这正是 IMM 算法中“混合 (mixing)”步骤的精确表达。
+$$
+p_{k-1}^{(i)}(\mathbf{x}_{k-1})
+$$
+
+ 按照**模式转移概率**和**上时刻模式概率**加权混合，并归一化。这个混合密度就是当前模式 $j$ 下进行动力学传播的**初始分布**。
+
+公式 (34) 中的权重 
+
+$$
+\frac{\pi_{ij} \mu_{k-1}^{(i)}}{\bar{\mu}_{k|k-1}^{(j)}}
+$$
+
+ 是一种**贝叶斯回溯**：给定当前模式 $j$，上一时刻模式为 $i$ 的概率。这正是 IMM 算法中“混合 (mixing)”步骤的精确表达。
 
 ---
 
 ## 总结：精确 JMS 贝叶斯滤波的递推结构
 
 1. **输入**：上一时刻的模式条件密度 $\{p_{k-1}^{(i)}(\mathbf{x})\}$ 和模式概率 $\{\mu_{k-1}^{(i)}\}$。
-2. **混合**：对每个当前模式 $j$，计算混合后验 $p_{k-1}(\mathbf{x} \mid \tau_{k}=j, Z_{0:k-1})$ (公式 34)。
-3. **预测**：对每个模式 $j$，将混合后验通过动力学方程传播，得到 $p_{k|k-1}^{(j)}(\mathbf{x}_{k})$ (公式 33)。
+2. **混合**：对每个当前模式 $j$，计算混合后验 
+
+$$
+p_{k-1}(\mathbf{x} \mid \tau_{k}=j, Z_{0:k-1})
+$$
+
+ (公式 34)。
+3. **预测**：对每个模式 $j$，将混合后验通过动力学方程传播，得到 
+
+$$
+p_{k|k-1}^{(j)}(\mathbf{x}_{k})
+$$
+
+ (公式 33)。
 4. **更新**：依次利用每个传感器的量测，通过算子 $\Psi_{k}^{(o,j)}$ 更新模式条件密度和模式概率 (公式 28-29, 35)。
 5. **输出**：后验模式条件密度 $p_{k}^{(j)}(\mathbf{x}_{k})$ 和模式概率 $\mu_{k}^{(j)}$。
 
@@ -187,7 +258,13 @@ $$
 
 ## 动机：指数增长的复杂度
 
-在第 3.1 节的精确 JMS 贝叶斯滤波中，**混合后验** $p_{k-1}(\mathbf{x}_{k-1} \mid \tau_{k}=j, Z_{0:k-1})$ 是关键中间量（见公式 34）。它把上一时刻所有模式的后验密度按照模式转移概率加权混合，作为当前模式 $j$ 下预测步的起始分布。
+在第 3.1 节的精确 JMS 贝叶斯滤波中，**混合后验** 
+
+$$
+p_{k-1}(\mathbf{x}_{k-1} \mid \tau_{k}=j, Z_{0:k-1})
+$$
+
+ 是关键中间量（见公式 34）。它把上一时刻所有模式的后验密度按照模式转移概率加权混合，作为当前模式 $j$ 下预测步的起始分布。
 
 假设上一时刻每个模式 $i$ 的后验密度是一个高斯混合（GM）：
 $$
@@ -200,7 +277,11 @@ $$
 
 **分量数的爆炸**：
 - 初始时每个模式可能只有少量分量。
-- 每一次预测-更新循环中，混合步骤将 $M$ 个 GM 合并成一个更大的 GM，其分量数为 $\sum_{i=1}^{M} L_{k-1}^{(i)}$。
+- 每一次预测-更新循环中，混合步骤将 $M$ 个 GM 合并成一个更大的 GM，其分量数为：
+
+$$
+\sum_{i=1}^{M} L_{k-1}^{(i)}
+$$
 - 若之后每个分量再经过非线性传播和自适应分裂（后续章节），分量数会指数级增长。  
 因此，**必须采用近似**来保持计算可行性。
 
@@ -230,7 +311,13 @@ $$
 $$
 p_{k-1}(\mathbf{x}_{k-1} \mid \tau_{k}=j, Z_{0:k-1}) = \sum_{i=1}^{M} \sum_{\ell=1}^{L_{k-1}^{(i)}} \frac{\pi_{ij} \mu_{k-1}^{(i)}}{\bar{\mu}_{k|k-1}^{(j)}} \omega_{k-1}^{(\ell,i)} \mathcal{N}(\mathbf{x}_{k-1}; \mathbf{m}_{k-1}^{(\ell,i)}, \mathbf{P}_{k-1}^{(\ell,i)})
 $$
-混合后验的精确表达式：共有 $L_{\text{max}} = \sum_{i} L_{k-1}^{(i)}$ 个分量。
+混合后验的精确表达式：共有 
+
+$$
+L_{\text{max}} = \sum_{i} L_{k-1}^{(i)}
+$$
+
+ 个分量。
 
 **(38)**  
 $$
@@ -296,7 +383,13 @@ $$
 在第 3.2 节中，我们通过 GMRC 聚类得到了混合后验的近似 GM（公式 41）。现在，我们要利用这个近似完成 **预测** 和 **多传感器更新**，最终获得当前时刻的后验 GM。核心挑战：
 
 1. **非线性预测**：动力学函数 $\mathbf{f}(\mathbf{x})$ 是非线性的，无法直接得到高斯分布的精确传播结果。
-2. **状态依赖的检测概率**： $p_{D,k}^{(o)}(\mathbf{x}_{k}; \mathcal{S}^{(o)})$ 与目标位置有关（传感器视场、遮挡、照明等），且不连续（视场边界）。
+2. **状态依赖的检测概率**： 
+
+$$
+p_{D,k}^{(o)}(\mathbf{x}_{k}; \mathcal{S}^{(o)})
+$$
+
+ 与目标位置有关（传感器视场、遮挡、照明等），且不连续（视场边界）。
 3. **负信息**：没有检测到目标 ($Z_{k}^{(o)} = \varnothing$) 同样提供信息，需要通过贝叶斯更新融入。
 4. **多传感器序贯更新**：利用量测条件独立，依次应用单传感器更新算子。
 
@@ -319,7 +412,12 @@ p_{k|k-1}^{(j)}(\mathbf{x}_{k}) \approx \sum_{\ell=1}^{L_{k|k-1}^{(j)}} \omega_{
 $$
 
 其中：
-- **权重不变**（公式 44）： $\omega_{k|k-1}^{(\ell,j)} = \omega_{k-1|k-1}^{(\ell,j)}$  
+- **权重不变**（公式 44）： 
+
+$$
+\omega_{k|k-1}^{(\ell,j)} = \omega_{k-1|k-1}^{(\ell,j)}
+$$
+  
   预测不改变分量的相对权重（但后续更新会改变）。
 - **预测均值**（公式 45）：
   $$
@@ -332,7 +430,13 @@ $$
   $$
   第一项是 $\mathbf{f}(\mathbf{x})$ 在输入分布下的**协方差**（非线性传播带来的不确定性），第二项是过程噪声。两项相加得到预测协方差。
 
-**关键假设**：每个分量的协方差 $\mathbf{P}_{k-1|k-1}^{(\ell,j)}$ 必须足够小，使得 $\mathbf{f}$ 在分量支撑集内近似线性。否则，上述高斯近似会引入大误差。这正是 3.4 节自适应分裂要解决的问题：对“太大”的分量进行分裂，减小其协方差。
+**关键假设**：每个分量的协方差 
+
+$$
+\mathbf{P}_{k-1|k-1}^{(\ell,j)}
+$$
+
+ 必须足够小，使得 $\mathbf{f}$ 在分量支撑集内近似线性。否则，上述高斯近似会引入大误差。这正是 3.4 节自适应分裂要解决的问题：对“太大”的分量进行分裂，减小其协方差。
 
 ---
 
@@ -351,7 +455,11 @@ g_{k}^{(o,j)}(Z_{k}^{(o)} \mid \mathbf{x}) =
 p_{D,k}^{(o)}(\mathbf{x}; \mathcal{S}^{(o)}) \; g_{k}^{(o)}(\mathbf{z}_{k}^{(o)} \mid \mathbf{x}), & Z_{k}^{(o)} = \{\mathbf{z}_{k}^{(o)}\}
 \end{cases}
 $$
-其中 $g_{k}^{(o)}(\mathbf{z} \mid \mathbf{x}) = \mathcal{N}(\mathbf{z}; \mathbf{h}^{(o)}(\mathbf{x}), \mathbf{R}_{k}^{(j)})$。
+其中：
+
+$$
+g_{k}^{(o)}(\mathbf{z} \mid \mathbf{x}) = \mathcal{N}(\mathbf{z}; \mathbf{h}^{(o)}(\mathbf{x}), \mathbf{R}_{k}^{(j)})
+$$
 
 **直觉**：量测可能为空（未检测到）或包含一个点。两种情况下，似然都依赖于状态依赖的检测概率 $p_{D,k}^{(o)}(\mathbf{x})$。当未检测到时，似然是“看不到目标的概率”，它通过 $1-p_D$ 传递**负信息**：若某个区域 $p_D$ 高但没有检测到，该区域的后验概率会降低。
 
@@ -365,7 +473,13 @@ $$
 
 **直觉**：这是贝叶斯公式直接应用。注意分母被省略（只写到正比于）。分母是归一化常数，它由对所有模式、所有连续状态积分得到，实际计算中会涉及模式概率更新（见公式 62）。
 
-由于 $p_D(\mathbf{x})$ 和 $g(\mathbf{z}\mid\mathbf{x})$ 都是非线性的，无法保持 GM 形式。论文采用**局部线性化近似**：假设在单个高斯分量的支撑内， $p_D(\mathbf{x})$ 近似为常数（等于在均值处的值），且量测函数 $\mathbf{h}(\mathbf{x})$ 可线性化（通过 EKF 或 sigma 点）。
+由于 $p_D(\mathbf{x})$ 和 
+
+$$
+g(\mathbf{z}\mid\mathbf{x})
+$$
+
+ 都是非线性的，无法保持 GM 形式。论文采用**局部线性化近似**：假设在单个高斯分量的支撑内， $p_D(\mathbf{x})$ 近似为常数（等于在均值处的值），且量测函数 $\mathbf{h}(\mathbf{x})$ 可线性化（通过 EKF 或 sigma 点）。
 
 ---
 
@@ -391,9 +505,23 @@ $$
 \mathbf{P}_{+}^{(\ell,j)} = \mathbf{P}^{(\ell)} - \mathbf{K}^{(\ell)} \mathbf{S}^{(\ell)} (\mathbf{K}^{(\ell)})^\top
 $$
 其中：
-- $\hat{\mathbf{z}}^{(\ell)} = \int \mathbf{h}(\mathbf{x}) \mathcal{N}(\mathbf{x}; \mathbf{m}^{(\ell)},\mathbf{P}^{(\ell)}) d\mathbf{x}$（量测预测均值）
-- $\mathbf{S}^{(\ell)} = \int (\mathbf{h}(\mathbf{x})-\hat{\mathbf{z}}^{(\ell)})(\cdot)^\top \mathcal{N}(\dots) d\mathbf{x} + \mathbf{R}_{k}^{(j)}$（新息协方差）
-- $\mathbf{K}^{(\ell)} = \int (\mathbf{x}-\mathbf{m}^{(\ell)})(\mathbf{h}(\mathbf{x})-\hat{\mathbf{z}}^{(\ell)})^\top \mathcal{N}(\dots) d\mathbf{x} \; (\mathbf{S}^{(\ell)})^{-1}$（卡尔曼增益）
+- 量测预测均值：
+
+$$
+\hat{\mathbf{z}}^{(\ell)} = \int \mathbf{h}(\mathbf{x}) \mathcal{N}(\mathbf{x}; \mathbf{m}^{(\ell)},\mathbf{P}^{(\ell)}) d\mathbf{x}
+$$
+
+- 新息协方差：
+
+$$
+\mathbf{S}^{(\ell)} = \int (\mathbf{h}(\mathbf{x})-\hat{\mathbf{z}}^{(\ell)})(\cdot)^\top \mathcal{N}(\dots) d\mathbf{x} + \mathbf{R}_{k}^{(j)}
+$$
+
+- 卡尔曼增益：
+
+$$
+\mathbf{K}^{(\ell)} = \int (\mathbf{x}-\mathbf{m}^{(\ell)})(\mathbf{h}(\mathbf{x})-\hat{\mathbf{z}}^{(\ell)})^\top \mathcal{N}(\dots) d\mathbf{x} \; (\mathbf{S}^{(\ell)})^{-1}
+$$
 
 这些积分同样用 UT 或统计线性化近似。
 
@@ -499,7 +627,13 @@ $$
 
 ## 分裂参数：如何生成子分量？
 
-直接对任意高斯分布求最优分裂参数非常困难。论文采用一个巧妙的方法：**预计算标准正态分布 $\mathcal{N}(x;0,1)$ 的最优分裂**，然后通过**线性变换**将分裂参数推广到任意多元高斯。
+直接对任意高斯分布求最优分裂参数非常困难。论文采用一个巧妙的方法：**预计算标准正态分布** 
+
+$$
+\mathcal{N}(x;0,1)
+$$
+
+ **的最优分裂**，然后通过**线性变换**将分裂参数推广到任意多元高斯。
 
 **标准正态分裂库** (公式 67)：
 $$
@@ -514,7 +648,13 @@ $$
 
 ## 将一维分裂扩展到多元高斯
 
-对于任意多元高斯分量 $\omega^{(i)}\mathcal{N}(\mathbf{x};\mathbf{m}^{(i)},\mathbf{P}^{(i)})$，我们希望在**某个方向 $\mathbf{u}$**（单位向量）上进行分裂，而保留垂直于 $\mathbf{u}$ 的方向不变。分裂后的子分量形式为 (公式 68-72)：
+对于任意多元高斯分量：
+
+$$
+\omega^{(i)}\mathcal{N}(\mathbf{x};\mathbf{m}^{(i)},\mathbf{P}^{(i)})
+$$
+
+我们希望在**某个方向 $\mathbf{u}$**（单位向量）上进行分裂，而保留垂直于 $\mathbf{u}$ 的方向不变。分裂后的子分量形式为 (公式 68-72)：
 
 $$
 \omega^{(i)}\mathcal{N}(\mathbf{x};\mathbf{m}^{(i)},\mathbf{P}^{(i)}) \approx \sum_{\ell=1}^{R} \omega^{(i,\ell)} \mathcal{N}(\mathbf{x};\mathbf{m}^{(i,\ell)}, \mathbf{P}^{(i,\ell)})
@@ -532,14 +672,24 @@ $$
    $$
    \mathbf{m}^{(i,\ell)} = \mathbf{m}^{(i)} + \tilde{m}^{(\ell)} \, \sigma_u^{(i)} \, \mathbf{u}
    $$
-   - $\sigma_u^{(i)} = \frac{1}{\sqrt{\mathbf{u}^\top (\mathbf{P}^{(i)})^{-1} \mathbf{u}}}$ 是原分量在方向 $\mathbf{u}$ 上的**标准差**（即沿 $\mathbf{u}$ 方向的尺度）。
+   - 
+
+$$
+\sigma_u^{(i)} = \frac{1}{\sqrt{\mathbf{u}^\top (\mathbf{P}^{(i)})^{-1} \mathbf{u}}}
+$$
+
+ 是原分量在方向 $\mathbf{u}$ 上的**标准差**（即沿 $\mathbf{u}$ 方向的尺度）。
    - 将标准正态的偏移量 $\tilde{m}^{(\ell)}$ 缩放到该尺度，再沿 $\mathbf{u}$ 方向移动均值。
 
 3. **子分量协方差** (公式 71)：
    $$
    \mathbf{P}^{(i,\ell)} = \mathbf{P}^{(i)} - (\sigma_u^{(i)})^2 \left( \sum_{j=1}^{R} (\tilde{m}^{(j)})^2 \tilde{\omega}^{(j)} \right) \mathbf{u}\mathbf{u}^\top
    $$
-   - 这个公式的含义：从原始协方差中**减去**沿 $\mathbf{u}$ 方向的一部分方差，因为分裂后，子分量在 $\mathbf{u}$ 方向上的方差应该比原分量小（这正是分裂的目的）。被减去的量是 $\sigma_u^2$ 乘以一个常数因子 $c_{\text{var}} = \sum_j (\tilde{m}^{(j)})^2 \tilde{\omega}^{(j)}$。
+   - 这个公式的含义：从原始协方差中**减去**沿 $\mathbf{u}$ 方向的一部分方差，因为分裂后，子分量在 $\mathbf{u}$ 方向上的方差应该比原分量小（这正是分裂的目的）。被减去的量是 $\sigma_u^2$ 乘以一个常数因子：
+
+$$
+c_{\text{var}} = \sum_j (\tilde{m}^{(j)})^2 \tilde{\omega}^{(j)}
+$$
    - 注意：所有子分量使用**相同的** $\mathbf{P}^{(i,\ell)}$（与 $\ell$ 无关），它们只在均值上沿 $\mathbf{u}$ 方向错开。
    - 这样设计可以保证分裂前后总体的**一阶矩和二阶矩不变**（即整体均值和协方差守恒），从而近似保持原始分布的整体特征。
 
@@ -557,7 +707,13 @@ $$
 
 分裂判据有多种，论文第 4 节详细讨论了三个具体判据，这里先概括其目的：
 
-- **统计线性化误差判据 (Sec. 4.1)**：评估利用线性化 $\mathbf{y} = \mathbf{G}\mathbf{x}+\mathbf{b}$ 近似非线性函数 $\mathbf{g}(\mathbf{x})$ 带来的误差。当误差超过阈值时分裂。
+- **统计线性化误差判据 (Sec. 4.1)**：评估利用线性化 
+
+$$
+\mathbf{y} = \mathbf{G}\mathbf{x}+\mathbf{b}
+$$
+
+ 近似非线性函数 $\mathbf{g}(\mathbf{x})$ 带来的误差。当误差超过阈值时分裂。
 - **Jacobi 常数判据 (Sec. 4.2)**：利用 CR3BP 的守恒量（Jacobi 常数）的方差作为非线性程度的廉价指标，若方差过大则分裂。
 - **负信息判据 (Sec. 4.3)**：当高斯分量跨越传感器视场边界时，检测概率 $p_D$ 在分量内部变化剧烈，零阶近似失效，需要分裂以精确处理非检测（负信息）。
 
@@ -572,8 +728,17 @@ $$
 $$
 \left\| \nabla_{\mathbf{u}} \mathcal{G}(\mathbf{x}) \right\|_F^2 = \mathbf{u}^\top \left( \sum_{i=1}^{n_y} \mathbf{D}_i^\top(\mathbf{x}) \mathbf{D}_i(\mathbf{x}) \right) \mathbf{u}
 $$
-- $\mathcal{G}(\mathbf{x}) = \nabla_{\mathbf{x}} \mathbf{g}(\mathbf{x})$ 是 Jacobian 矩阵。
-- $\mathbf{D}_i(\mathbf{x}) = \nabla_{\mathbf{x}} \nabla_{\mathbf{x}} g_i(\mathbf{x})|_{\mathbf{x}}$ 是第 $i$ 个输出分量的 Hessian 矩阵。
+- Jacobian 矩阵：
+
+$$
+\mathcal{G}(\mathbf{x}) = \nabla_{\mathbf{x}} \mathbf{g}(\mathbf{x})
+$$
+
+- 第 $i$ 个输出分量的 Hessian 矩阵：
+
+$$
+\mathbf{D}_i(\mathbf{x}) = \nabla_{\mathbf{x}} \nabla_{\mathbf{x}} g_i(\mathbf{x})|_{\mathbf{x}}
+$$
 - 这个度量实质上是 Hessian 的 Frobenius 范数在方向 $\mathbf{u}$ 上的投影，反映了函数在点 $\mathbf{x}$ 处沿 $\mathbf{u}$ 方向的**曲率**。
 
 为了找到最优分裂方向，我们求解约束优化问题 (公式 80)：
@@ -582,15 +747,39 @@ $$
 \mathbf{u}^* = \underset{\mathbf{u}^\top \mathbf{P}^{-1} \mathbf{u} = 1}{\arg\max} \; \mathbf{u}^\top \left( \sum_{i=1}^{n_y} \mathbf{D}_i^\top(\mathbf{x}) \mathbf{D}_i(\mathbf{x}) \right) \mathbf{u}
 $$
 
-约束 $\mathbf{u}^\top \mathbf{P}^{-1} \mathbf{u} = 1$ 将 $\mathbf{u}$ 限制在原高斯分量的 **1-σ 椭球** 内（即 Mahalanobis 距离为 1）。这样可以避免选择概率密度极低的远区方向，确保分裂方向在概率显著的区域。
+约束（将 $\mathbf{u}$ 限制在原高斯分量的 **1-σ 椭球** 内，即 Mahalanobis 距离为 1）：
 
-通过白化变换 $\mathbf{y} = \mathbf{S}^{-1}\mathbf{u}$，其中 $\mathbf{P} = \mathbf{S}\mathbf{S}^\top$（如 Cholesky 分解），约束变为 $\|\mathbf{y}\| = 1$，问题转化为标准 Rayleigh 商：
+$$
+\mathbf{u}^\top \mathbf{P}^{-1} \mathbf{u} = 1
+$$
+
+这样可以避免选择概率密度极低的远区方向，确保分裂方向在概率显著的区域。
+
+通过白化变换：
+
+$$
+\mathbf{y} = \mathbf{S}^{-1}\mathbf{u}
+$$
+
+其中：
+
+$$
+\mathbf{P} = \mathbf{S}\mathbf{S}^\top
+$$
+
+（如 Cholesky 分解），约束变为 $\|\mathbf{y}\| = 1$，问题转化为标准 Rayleigh 商：
 
 $$
 \mathbf{y}^* = \underset{\|\mathbf{y}\|=1}{\arg\max} \; \mathbf{y}^\top \mathbf{S}^\top \left( \sum_{i} \mathbf{D}_i^\top \mathbf{D}_i \right) \mathbf{S} \mathbf{y}
 $$
 
-其解为矩阵 $\mathbf{S}^\top \left( \sum_i \mathbf{D}_i^\top \mathbf{D}_i \right) \mathbf{S}$ 的最大特征值对应的特征向量。然后通过 $\mathbf{u}^* = \mathbf{S}\mathbf{y}^*$ 变换回原空间。
+其解为矩阵 
+
+$$
+\mathbf{S}^\top \left( \sum_i \mathbf{D}_i^\top \mathbf{D}_i \right) \mathbf{S}
+$$
+
+ 的最大特征值对应的特征向量。然后通过 $\mathbf{u}^* = \mathbf{S}\mathbf{y}^*$ 变换回原空间。
 
 **直觉**：我们在概率密度最高的区域（1-σ 椭球）内寻找函数弯曲最厉害的方向，沿该方向分裂可以最大程度减少因线性化带来的误差。
 
