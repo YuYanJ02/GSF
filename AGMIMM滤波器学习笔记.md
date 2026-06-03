@@ -4,9 +4,7 @@
 > **期刊**：The Journal of the Astronautical Sciences (2025) 72:2  
 > **DOI**：[10.1007/s40295-024-00478-z](https://doi.org/10.1007/s40295-024-00478-z)  
 > **作者**：John L. Iannamorelli, Keith A. LeGrand（Purdue University）  
-> **整理依据**：论文 PDF + [`AGMIMM.docx`](AGMIMM.docx) / [`_docx_extract.txt`](_docx_extract.txt)（§3.1–3.4 中文详解已并入正文）
->
-> **阅读说明**：GitHub 渲染要求：中文标点后 `$` 前留空格（如 `： $p_{...}$`）；条件下标用 `\mid`；符号表见 §0.3。详见附录 B。
+
 
 ---
 
