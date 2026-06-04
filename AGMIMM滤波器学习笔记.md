@@ -4,9 +4,6 @@
 > **期刊**：The Journal of the Astronautical Sciences (2025) 72:2  
 > **DOI**：[10.1007/s40295-024-00478-z](https://doi.org/10.1007/s40295-024-00478-z)  
 > **作者**：John L. Iannamorelli, Keith A. LeGrand（Purdue University）  
-> **整理依据**：[`AGMIMM.txt`](AGMIMM.txt)（§3.1–3.4 中文详解）  
->
-> **阅读说明**：GitHub 官方行内公式语法为 `` $`...`$ ``（反引号包裹，避免 `_` 被 Markdown 吃掉）；块级公式用独立 `` ```math `` 代码块。
 
 ---
 
