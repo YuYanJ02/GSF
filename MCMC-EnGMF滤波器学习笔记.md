@@ -4,9 +4,6 @@
 > **会议/预印本**：AAS SciTech 2023，论文编号 AAS 23-356（Preprint）  
 > **作者**：Dalton Durant, Andrey A. Popov, Renato Zanetti（The University of Texas at Austin）  
 > **原文 PDF**：[`MCMC ENGMF FOR SPARSE DATA ORBIT DETERMINATION.pdf`](MCMC%20ENGMF%20FOR%20SPARSE%20DATA%20ORBIT%20DETERMINATION.pdf)  
-> **整理依据**：[`MCMC-EnGMF.txt`](MCMC-EnGMF.txt)（EnGMF / Batch EnGMF / MCMC EnGMF 中文详解）  
->
-> **阅读说明**：GitHub 官方行内公式语法为 `` $`...`$ ``（反引号包裹，避免 `_` 被 Markdown 吃掉）；块级公式用独立 `` ```math `` 代码块。
 
 ---
 
