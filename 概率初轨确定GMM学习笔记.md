@@ -63,7 +63,7 @@ a \le a_{\max}, \qquad e \le e_{\max}
 没有更多先验信息时，作者认为可容许域内各点等可能：
 
 ```math
-p(\rho,\dot{\rho}) = \begin{cases} 1/\operatorname{Area}(\mathcal{A}), & (\rho,\dot{\rho}) \in \mathcal{A} \\ 0, & \text{其他} \end{cases}
+p(\rho,\dot{\rho}) = \begin{cases} 1/\mathrm{Area}(\mathcal{A}), & (\rho,\dot{\rho}) \in \mathcal{A} \\ 0, & \text{其他} \end{cases}
 ```
 
 该分布边界不规则，不能用单个高斯准确描述，因此采用：
