@@ -5,6 +5,8 @@
 > **作者**：John A. Gaebler 等；**会议**：AMOS 2025
 >
 > **原文**：[PDF](Application%20of%20Uncertainty%20Propagation%20with%20Adaptive%20Gaussian%20Mixture%20Models%20for%20Cislunar%20Objects.pdf)
+>
+> **新版详细笔记**：[研究思路、关键公式、自测题与答案](地月空间自适应GMM不确定性传播学习笔记.md)（参照本仓库概率初轨确定 GMM 学习笔记的结构）
 
 ## 1. 研究目标
 
